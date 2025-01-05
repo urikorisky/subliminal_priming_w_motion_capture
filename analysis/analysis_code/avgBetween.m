@@ -33,7 +33,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     n_good_subs = length(good_subs);
     
     for iSub = good_subs
-        p = defineParams(p, iSub);
+        p = defineParams_URI_EDIT(p, iSub);
         % load avg within subject.
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_name{1}]);  r_avg = avg.r_avg; k_avg = avg.k_avg;
         % sum to calc avg between subjects.
@@ -87,8 +87,8 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     r_subs_avg.fc_prime.incon   = r_subs_avg.fc_prime.incon / n_good_subs;
     r_subs_avg.pas.con          = r_subs_avg.pas.con / n_good_subs;
     r_subs_avg.pas.incon        = r_subs_avg.pas.incon / n_good_subs;
-    r_subs_avg.reach_area.con   = mean(reach_area.con);
-    r_subs_avg.reach_area.incon = mean(reach_area.incon);
+    r_subs_avg.reach_area.con   = mean(reach_area.con,"omitmissing");
+    r_subs_avg.reach_area.incon = mean(reach_area.incon,"omitmissing");
     % Keyboard.
     k_subs_avg.rt = divideByNumOfSubs(k_subs_avg.rt, n_good_subs);
     k_subs_avg.fc_prime.con   = k_subs_avg.fc_prime.con / n_good_subs;

@@ -43,6 +43,10 @@ function [data_table] = calcAuc(traj_table, data_table, prenorm_traj_table, p)
             else
                 pnts_to_keep = traj(:,1) > opt_path(:,1);
             end
+            if(~any(pnts_to_keep))
+                disp(iTrial);
+                disp('no points to keep!')
+            end
             % Pnts lateral to optimal path get its x values.
             traj(~pnts_to_keep, 1) = opt_path(~pnts_to_keep, 1);
             % Calc area between optimal path and traj.

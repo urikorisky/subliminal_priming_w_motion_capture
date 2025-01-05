@@ -4,7 +4,11 @@ close all;
 warning('OFF', 'MATLAB:DELETE:FileNotFound');
 TESTS_FOLDER = './tests/';
 TEST_RES_FOLDER = [TESTS_FOLDER '/test_results/'];
-DATA_FOLDER = '../../../raw_data/';
+if(~exist(TEST_RES_FOLDER,"dir"))
+    mkdir(TEST_RES_FOLDER);
+end
+%DATA_FOLDER = '../../../raw_data/';
+DATA_FOLDER = '../../../../../downloaded_from_Z/raw_data/';
 STIM_FOLDER = '../stimuli/';
 TRIALS_LISTS_FOLDER = [STIM_FOLDER 'trial_lists/'];
 addpath('.\tests');
@@ -20,7 +24,7 @@ EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn
 EXP_4_SUBS = [43 44];
 EXP_4_1_SUBS = [47, 49:85, 87:90];
 SIM_SUBS = [94];
-sub_num = SIM_SUBS;
+sub_num = EXP_4_1_SUBS;
 % To test word list enter its name.
 word_list = 'test_trials20day2.xlsx';
 list_type = 'test'; % 'practice' / 'test' list.
