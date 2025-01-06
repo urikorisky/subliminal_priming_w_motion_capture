@@ -307,6 +307,33 @@ for iTraj = 1:length(traj_names)
 end
 timing = num2str(toc);
 disp(['MAD calc done. ' timing 'Sec']);
+
+%% MAD standardized per subject
+tic
+for iTraj = 1:length(traj_names)
+    % Get the list of bad trials for all subjects:
+    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);
+    reach_bad_trials = bad_trials.reach_bad_trials;
+
+    for iSub = p.SUBS
+        % Load.
+        p = defineParams_URI_EDIT(p, iSub);
+        reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+        % Find trials which will later be excluded:
+            % Bad trials reasons, Remove reason: "slow_mvmnt", "loop".
+            reasons = string(reach_bad_trials{iSub}.Properties.VariableNames);
+            reasons(reasons == "any" | reasons == "slow_mvmnt" | reasons == "loop") = [];
+            bad = any(reach_bad_trials{iSub}{:, reasons}, 2);
+        % Compute.
+        reach_data_table.target_to_mad_z = nan(size(reach_data_table,1),1);
+        reach_data_table.target_to_mad_z(~isnan(reach_data_table.target_to_mad) & ~bad) = ...
+            zscore(reach_data_table.target_to_mad(~isnan(reach_data_table.target_to_mad) & ~bad));
+        % Save.
+        save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+    end
+end
+timing = num2str(toc);
+disp(['MAD calc done. ' timing 'Sec']);
 %% Heading angle
 tic
 for iSub = p.SUBS
@@ -529,7 +556,7 @@ close all;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
 plt_p.x_as_func_of = "zaxis"; % To plot X as a function of "time" or "zaxis".
-plt_p.errbar_type = 'ci'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
+plt_p.errbar_type = 'se'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
 % Statistical params.
 plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 % Plots appearance.
@@ -1041,7 +1068,7 @@ else
         j = j + 1;
     end
 end
-
+%% URI - separated the third plot (figure 2 in the orig MS)
 paper_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % ------- Prime Forced choice -------
 figure(paper_f(3));

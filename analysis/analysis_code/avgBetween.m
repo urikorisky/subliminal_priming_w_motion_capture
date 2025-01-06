@@ -14,6 +14,8 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     r_subs_avg.react     = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.mt        = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.mad       = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
+    % URI - Adding the mad_z calculation:
+    r_subs_avg.mad_z       = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.mad_p     = struct('con_left',[0 0 0], 'con_right',[0 0 0], 'incon_left',[0 0 0], 'incon_right',[0 0 0]);
     r_subs_avg.com       = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.tot_dist  = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
@@ -48,6 +50,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
         r_subs_avg.react     = sortedSum(r_subs_avg.react, r_avg.react);
         r_subs_avg.mt        = sortedSum(r_subs_avg.mt, r_avg.mt);
         r_subs_avg.mad       = sortedSum(r_subs_avg.mad, r_avg.mad);
+        r_subs_avg.mad_z       = sortedSum(r_subs_avg.mad_z, r_avg.mad_z);
         r_subs_avg.mad_p     = sortedSum(r_subs_avg.mad_p, r_avg.mad_p);
         r_subs_avg.com       = sortedSum(r_subs_avg.com, r_avg.com);
         r_subs_avg.tot_dist  = sortedSum(r_subs_avg.tot_dist, r_avg.tot_dist);
