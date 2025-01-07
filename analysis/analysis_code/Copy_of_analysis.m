@@ -27,7 +27,7 @@ p.DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
-p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
+p.NORMALIZE_WITHIN_SUB = 1; % Normalize each variable within each sub.
 p.NORM_TRAJ = 1; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
 p.MIN_SAMP_LEN = 0.1; % In sec. Shorter trajs are excluded. (for NORM_TRAJ=0 use 0.34, otherwise 0.1).
                         % When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
@@ -629,6 +629,12 @@ for iSub = p.SUBS
         reach_avg_each.mad(iTraj).con_right(iSub) = r_avg.mad.con_right;
         reach_avg_each.mad(iTraj).incon_left(iSub)  = r_avg.mad.incon_left;
         reach_avg_each.mad(iTraj).incon_right(iSub) = r_avg.mad.incon_right;
+        % URI - adding mad_z
+        reach_avg_each.mad_z(iTraj).con_left(iSub)  = r_avg.mad_z.con_left;
+        reach_avg_each.mad_z(iTraj).con_right(iSub) = r_avg.mad_z.con_right;
+        reach_avg_each.mad_z(iTraj).incon_left(iSub)  = r_avg.mad_z.incon_left;
+        reach_avg_each.mad_z(iTraj).incon_right(iSub) = r_avg.mad_z.incon_right;
+        % /URI
         reach_avg_each.com(iTraj).con_left(iSub)  = r_avg.com.con_left;
         reach_avg_each.com(iTraj).con_right(iSub) = r_avg.com.con_right;
         reach_avg_each.com(iTraj).incon_left(iSub)  = r_avg.com.incon_left;
@@ -670,14 +676,25 @@ for iSub = p.SUBS
         reach_avg_each.acc(iTraj).incon(:, iSub) = r_avg.acc.incon;
         reach_avg_each.iep(iTraj).con(:, iSub) = r_avg.iep.con;
         reach_avg_each.iep(iTraj).incon(:, iSub) = r_avg.iep.incon;
-        reach_avg_each.rt(iTraj).con(iSub) = r_avg.rt.con * 1000;
-        reach_avg_each.rt(iTraj).incon(iSub) = r_avg.rt.incon * 1000;
-        reach_avg_each.react(iTraj).con(iSub) = r_avg.react.con * 1000;
-        reach_avg_each.react(iTraj).incon(iSub) = r_avg.react.incon * 1000;
-        reach_avg_each.mt(iTraj).con(iSub) = r_avg.mt.con * 1000;
-        reach_avg_each.mt(iTraj).incon(iSub) = r_avg.mt.incon * 1000;
+        % URI - check normalization flag, only if off then multiply time 
+        % variables by 1000 to get ms:
+        if(p.NORMALIZE_WITHIN_SUB)
+            timeMultFactor = 1;
+        else
+            timeMultFactor = 1000;
+        end
+        reach_avg_each.rt(iTraj).con(iSub) = r_avg.rt.con * timeMultFactor;
+        reach_avg_each.rt(iTraj).incon(iSub) = r_avg.rt.incon * timeMultFactor;
+        reach_avg_each.react(iTraj).con(iSub) = r_avg.react.con * timeMultFactor;
+        reach_avg_each.react(iTraj).incon(iSub) = r_avg.react.incon * timeMultFactor;
+        reach_avg_each.mt(iTraj).con(iSub) = r_avg.mt.con * timeMultFactor;
+        reach_avg_each.mt(iTraj).incon(iSub) = r_avg.mt.incon * timeMultFactor;
         reach_avg_each.mad(iTraj).con(iSub) = r_avg.mad.con;
         reach_avg_each.mad(iTraj).incon(iSub) = r_avg.mad.incon;
+        % URI - adding mad_z:
+        reach_avg_each.mad_z(iTraj).con(iSub) = r_avg.mad_z.con;
+        reach_avg_each.mad_z(iTraj).incon(iSub) = r_avg.mad_z.incon;
+        % /URI
         reach_avg_each.com(iTraj).con(iSub) = r_avg.com.con;
         reach_avg_each.com(iTraj).incon(iSub) = r_avg.com.incon;
         reach_avg_each.tot_dist(iTraj).con(iSub) = r_avg.tot_dist.con;
@@ -692,8 +709,15 @@ for iSub = p.SUBS
         reach_avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
         reach_avg_each.pas(iTraj).con(iSub,:) = r_avg.pas.con;
         reach_avg_each.pas(iTraj).incon(iSub,:) = r_avg.pas.incon;
-        keyboard_avg_each.rt(iTraj).con(iSub) = k_avg.rt.con * 1000;
-        keyboard_avg_each.rt(iTraj).incon(iSub) = k_avg.rt.incon * 1000;
+        % URI - check normalization flag, only if off then multiply time 
+        % variables by 1000 to get ms:
+        if(p.NORMALIZE_WITHIN_SUB)
+            timeMultFactor = 1;
+        else
+            timeMultFactor = 1000;
+        end
+        keyboard_avg_each.rt(iTraj).con(iSub) = k_avg.rt.con * timeMultFactor;
+        keyboard_avg_each.rt(iTraj).incon(iSub) = k_avg.rt.incon * timeMultFactor;
         keyboard_avg_each.rt_std(iTraj).con(iSub) = k_avg.rt_std.con;
         keyboard_avg_each.rt_std(iTraj).incon(iSub) = k_avg.rt_std.incon;
         keyboard_avg_each.pas(iTraj).con(iSub,:) = k_avg.pas.con;
@@ -707,6 +731,10 @@ for iSub = p.SUBS
                                                 r_avg.mt.con_right - r_avg.mt.incon_right]) * 1000;
         reach_avg_each.mad(iTraj).diff(iSub)  = mean([r_avg.mad.con_left - r_avg.mad.incon_left,...
                                                 r_avg.mad.con_right - r_avg.mad.incon_right]);
+        % URI - adding mad_z:
+        reach_avg_each.mad_z(iTraj).diff(iSub)  = mean([r_avg.mad_z.con_left - r_avg.mad_z.incon_left,...
+                                                r_avg.mad_z.con_right - r_avg.mad_z.incon_right]);
+        % /URI
         reach_avg_each.x_dev(iTraj).diff(:,iSub) = mean([-1 * (r_avg.traj.con_left(:,1) - r_avg.traj.incon_left(:,1)),...
                                                     (r_avg.traj.con_right(:,1) - r_avg.traj.incon_right(:,1))],...
                                                     2);
@@ -1068,6 +1096,62 @@ else
         j = j + 1;
     end
 end
+
+%% URI - copied to change figure 3 (all measures)
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+% Present single trial data of which subs?
+subs_to_present = good_subs([5,10]);
+
+  
+    paper_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+    % ------- Avg traj with shade -------
+    figure(paper_f(1));
+    subplot(2,10,[2:5]);
+    plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+    
+    % ------- Response Times Keyboard -------
+    figure(paper_f(1));
+    subplot(2,5,4);
+    p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+    % ------- Reach Area -------
+    % Area between avg left traj and avg right traj (in each condition).
+    figure(paper_f(1));
+    subplot(2,5,5);
+    p_val = plotMultiReachArea(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+    % ------- MAD -------
+    figure(paper_f(1));
+    subplot(2,5,6);
+    p_val = plotMultiMad_CongIncong(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/reach_mad_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    
+    
+    % ------- React + Movement + Response Times Reaching -------
+    figure(paper_f(1));
+    subplot_p = [2,5,9; 2,5,7];
+    react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
+    p_val = react_mt_rt_p_val.react;
+    save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    p_val = react_mt_rt_p_val.mt;
+    save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    
+    % ------- Total distance traveled -------
+    figure(paper_f(1));
+    subplot(2,5,8);
+    p_val = plotMultiTotDist(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+    % ------- COM -------
+    % Number of changes of mind.
+    figure(paper_f(1));
+    subplot(2,5,10);
+    p_val = plotMultiCom(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+
 %% URI - separated the third plot (figure 2 in the orig MS)
 paper_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % ------- Prime Forced choice -------
@@ -1076,6 +1160,8 @@ subplot(2,3,1);
 plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
 subplot(2,3,2);
 plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
+%% URI - figure 2 changed to include only incongruent condition
+plotMultiRecognition_SepByCong('good_subs', traj_names{1}{1}, plt_p, p);
 %% Add labels to subplots.
 subplots = [];
 % Define order of subplots for each configuration.

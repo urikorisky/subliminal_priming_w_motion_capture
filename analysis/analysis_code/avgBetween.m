@@ -50,6 +50,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
         r_subs_avg.react     = sortedSum(r_subs_avg.react, r_avg.react);
         r_subs_avg.mt        = sortedSum(r_subs_avg.mt, r_avg.mt);
         r_subs_avg.mad       = sortedSum(r_subs_avg.mad, r_avg.mad);
+        % URI - Adding the mad_z calculation:
         r_subs_avg.mad_z       = sortedSum(r_subs_avg.mad_z, r_avg.mad_z);
         r_subs_avg.mad_p     = sortedSum(r_subs_avg.mad_p, r_avg.mad_p);
         r_subs_avg.com       = sortedSum(r_subs_avg.com, r_avg.com);
@@ -79,6 +80,8 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     r_subs_avg.react     = divideByNumOfSubs(r_subs_avg.react, n_good_subs);
     r_subs_avg.mt        = divideByNumOfSubs(r_subs_avg.mt, n_good_subs);
     r_subs_avg.mad       = divideByNumOfSubs(r_subs_avg.mad, n_good_subs);
+    % URI - Adding the mad_z calculation:
+    r_subs_avg.mad       = divideByNumOfSubs(r_subs_avg.mad_z, n_good_subs);
     r_subs_avg.mad_p     = divideByNumOfSubs(r_subs_avg.mad_p, n_good_subs);
     r_subs_avg.com       = divideByNumOfSubs(r_subs_avg.com, n_good_subs);
     r_subs_avg.tot_dist  = divideByNumOfSubs(r_subs_avg.tot_dist, n_good_subs);
